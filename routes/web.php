@@ -19,7 +19,8 @@ Route::get('/', function () {
 
 Auth::routes();
 
-Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+Route::get('/home', [App\Http\Controllers\DashboardController::class, 'index'])->name('home');
+Route::get('/home/usage', [App\Http\Controllers\DashboardController::class, 'usage'])->name('home.usage');
 
 Route::middleware(['auth', 'role:owner'])->group(function () {
     Route::get('users', [\App\Http\Controllers\UserController::class, 'index'])->name('users.index');
@@ -30,7 +31,6 @@ Route::middleware(['auth', 'role:owner'])->group(function () {
 });
 
 Route::middleware('auth')->group(function () {
-    Route::view('about', 'about')->name('about');
 
     Route::get('profile', [\App\Http\Controllers\ProfileController::class, 'show'])->name('profile.show');
     Route::put('profile', [\App\Http\Controllers\ProfileController::class, 'update'])->name('profile.update');
@@ -57,3 +57,11 @@ Route::get('products/export/pdf', [\App\Http\Controllers\ProductController::clas
 Route::get('history/{tableName}', [\App\Http\Controllers\HistoryController::class, 'tableName'])
     ->name('history.tableName')
     ->middleware('auth');
+
+// route for cek stock
+Route::get('/check-stock', [\App\Http\Controllers\ProductController::class, 'showCheckStockForm'])->name('check-stock');
+Route::post('/check-product-stock', [\App\Http\Controllers\ProductController::class, 'checkProductStock'])->name('check-product-stock');
+Route::post('/export-stock-report', [\App\Http\Controllers\ProductController::class, 'exportStockReport'])->name('export-stock-report');
+Route::get('/product/usage', [\App\Http\Controllers\ProductController::class, 'showUsageForm'])->name('product.usage.form');
+Route::get('/product/usage/results', [\App\Http\Controllers\ProductController::class, 'showUsage'])->name('product.usage');
+Route::get('/products/usage/pdf', [\App\Http\Controllers\ProductController::class, 'downloadUsageReport'])->name('product.usage.pdf');

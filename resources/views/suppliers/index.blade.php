@@ -47,6 +47,8 @@
                     <th>Name Supplier</th>
                     <th>Address Supplier</th>
                     <th>Merchant</th>
+                    <th>Contact</th>
+                    <th>WA</th>
                     <th>Action</th>
                   </tr>
                 </thead>
@@ -56,6 +58,16 @@
                       <td>{{ $supplier->name_supplier }}</td>
                       <td>{{ $supplier->address_supplier }}</td>
                       <td>{{ $supplier->merchant }}</td>
+                      <td>{{ $supplier->phone }}</td>
+                        <td>
+                        @if ($supplier->whatsapp)
+                          <a href="https://wa.me/{{ preg_replace('/^0/', '+62', $supplier->whatsapp) }}" target="_blank">
+                            {{ $supplier->name_supplier }}
+                          </a>
+                        @else
+                          -
+                        @endif
+                        </td>
                       <td>
                         <a href="{{ route('suppliers.show', $supplier->id) }}" class="btn btn-sm btn-primary">
                           <i class="fas fa-eye"></i>

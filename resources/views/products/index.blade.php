@@ -43,10 +43,12 @@
               <table class="table table-bordered">
                 <thead>
                   <tr>
+                    <th>Product Photo</th>
                     <th>Product Name</th>
                     <th>Supplier</th>
                     <th>Category</th>
                     <th>Stock</th>
+                    <th>Unit</th>
                     <th>Threshold</th>
                     <th>Action</th>
                   </tr>
@@ -54,23 +56,33 @@
                 <tbody>
                   @foreach ($products as $product)
                     <tr>
+                      <td>
+                        @if ($product->product_photo)
+                          <img src="{{ asset('storage/' . $product->product_photo) }}" alt="{{ $product->product_name }}"
+                            class="img-thumbnail" width="50">
+                        @endif
                       <td>{{ $product->product_name }}</td>
                       <td>{{ $product->supplier->name_supplier }}</td>
                       <td>{{ $product->category->category_name }}</td>
-                      <td>
-                        @if ($product->stock <= $product->threshold)
+                        <td>
+                        @if ($product->stock < $product->threshold)
                           <span class="badge badge-danger d-flex align-items-center">
-                            <i class="fas fa-exclamation-circle mr-2"></i>
-                            {{ $product->stock }}
+                          <i class="fas fa-exclamation-circle mr-2"></i>
+                          {{ $product->stock }}
+                          </span>
+                        @elseif ($product->stock == $product->threshold)
+                          <span class="badge badge-warning d-flex align-items-center">
+                          <i class="fas fa-exclamation-triangle mr-2"></i>
+                          {{ $product->stock }}
                           </span>
                         @else
                           <span class="badge badge-success d-flex align-items-center">
-                            <i class="fas fa-check-circle mr-2"></i>
-                            {{ $product->stock }}
+                          <i class="fas fa-check-circle mr-2"></i>
+                          {{ $product->stock }}
                           </span>
                         @endif
-
-                      </td>
+                        </td>
+                      <td>{{ $product->unit }}</td>
                       <td>{{ $product->threshold }}</td>
                       <td>
                         <a href="{{ route('products.show', $product->id) }}" class="btn btn-sm btn-primary">
@@ -176,12 +188,13 @@
                                   <p>
                                     <strong>Expired:</strong>{{ \Carbon\Carbon::parse($log->expired_at)->format('d/m/Y') }}
                                   </p>
-                                  @if ($log->photo)
+                                    @if ($log->photo)
                                     <p><strong>Photo:</strong> <a href="{{ asset('storage/' . $log->photo) }}"
-                                        target="_blank">View Image</a></p>
-                                  @else
+                                      target="_blank">View Image</a></p>
+                                    <img src="{{ asset('storage/' . $log->photo) }}" alt="Log Photo" class="img-thumbnail" width="100">
+                                    @else
                                     <p>No photo available</p>
-                                  @endif
+                                    @endif
                                 </div>
                               </div>
                             @empty

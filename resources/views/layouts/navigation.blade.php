@@ -47,7 +47,25 @@
                 </a>
             </li>
 
-            @if (auth()->user()->hasRole('owner'))
+            <li class="nav-item">
+                <a href="{{ route('check-stock') }}" class="nav-link">
+                    <i class="nav-icon fas fa-box"></i>
+                    <p>
+                        {{ __('Check Stok Offname') }}
+                    </p>
+                </a>
+            </li>
+
+            <li class="nav-item">
+                <a href="{{ route('product.usage.form') }}" class="nav-link">
+                    <i class="nav-icon fas fa-box"></i>
+                    <p>
+                        {{ __('Usage Product') }}
+                    </p>
+                </a>
+            </li>
+
+            @if (auth()->user()->hasRole('admin'))
             <li class="nav-item">
                 <a href="{{ route('users.index') }}" class="nav-link">
                     <i class="nav-icon fas fa-users"></i>
@@ -57,29 +75,36 @@
                 </a>
             </li>
             @endif
-
-            <li class="nav-item">
-                <a href="{{ route('about') }}" class="nav-link">
-                    <i class="nav-icon far fa-address-card"></i>
-                    <p>
-                        {{ __('About us') }}
-                    </p>
-                </a>
-            </li>
-
+            
             <li class="nav-item">
                 <a href="#" class="nav-link">
                     <i class="nav-icon fas fa-circle nav-icon"></i>
                     <p>
-                        Two-level menu
+                        Report
                         <i class="fas fa-angle-left right"></i>
                     </p>
                 </a>
                 <ul class="nav nav-treeview" style="display: none;">
                     <li class="nav-item">
-                        <a href="#" class="nav-link">
+                        <a href="{{ route('suppliers.exportPDF') }}" class="nav-link" target="_blank">
                             <i class="far fa-circle nav-icon"></i>
-                            <p>Child menu</p>
+                            <p>Supplier Report</p>
+                        </a>
+                    </li>
+                </ul>
+                <ul class="nav nav-treeview" style="display: none;">
+                    <li class="nav-item">
+                        <a href="{{ route('categories.exportPDF') }}" class="nav-link" target="_blank">
+                            <i class="far fa-circle nav-icon"></i>
+                            <p>Category Product Report</p>
+                        </a>
+                    </li>
+                </ul>
+                <ul class="nav nav-treeview" style="display: none;">
+                    <li class="nav-item">
+                        <a href="{{ route('products.exportPDF') }}" class="nav-link" target="_blank">
+                            <i class="far fa-circle nav-icon"></i>
+                            <p>Product Report</p>
                         </a>
                     </li>
                 </ul>

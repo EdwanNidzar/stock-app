@@ -96,6 +96,31 @@
                       @enderror
                     </div>
                     <div class="form-group">
+                      <label for="unit">{{ __('Unit') }}</label>
+                      <select class="form-control @error('unit') is-invalid @enderror" id="unit" name="unit"
+                        required>
+                        <option value="" disabled>Select Unit</option>
+                        <option value="gram" {{ old('unit', $product->unit) == 'gram' ? 'selected' : '' }}>Gram
+                        </option>
+                        <option value="kilogram" {{ old('unit', $product->unit) == 'kilogram' ? 'selected' : '' }}>
+                          Kilogram</option>
+                        <option value="ekor" {{ old('unit', $product->unit) == 'ekor' ? 'selected' : '' }}>Ekor
+                        </option>
+                        <option value="pcs" {{ old('unit', $product->unit) == 'pcs' ? 'selected' : '' }}>Pcs</option>
+                        <option value="pack" {{ old('unit', $product->unit) == 'pack' ? 'selected' : '' }}>Pack
+                        </option>
+                        <option value="pouch" {{ old('unit', $product->unit) == 'pouch' ? 'selected' : '' }}>Pouch
+                        </option>
+                        <option value="buah" {{ old('unit', $product->unit) == 'buah' ? 'selected' : '' }}>Buah
+                        </option>
+                        <option value="dus" {{ old('unit', $product->unit) == 'dus' ? 'selected' : '' }}>Dus</option>
+                        <option value="liter" {{ old('unit', $product->unit) == 'liter' ? 'selected' : '' }}>Liter</option>
+                      </select>
+                      @error('unit')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                      @enderror
+                    </div>
+                    <div class="form-group">
                       <label for="price">{{ __('Price') }}</label>
                       <input type="number" class="form-control @error('price') is-invalid @enderror" id="price"
                         name="price" value="{{ old('price', $product->price) }}" placeholder="Enter Product Price"

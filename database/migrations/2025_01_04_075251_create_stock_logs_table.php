@@ -20,6 +20,8 @@ return new class extends Migration
             $table->string('photo');
             $table->date('expired_at')->nullable();
             $table->text('note')->nullable();            
+            $table->enum('status', ['pending', 'approved', 'rejected'])->default('pending');
+            $table->unsignedBigInteger('approved_by')->nullable();
             $table->timestamps();
             
             $table->foreign('product_id')->references('id')->on('products');

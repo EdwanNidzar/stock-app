@@ -19,6 +19,7 @@ return new class extends Migration
             $table->string('product_photo');
             $table->decimal('price', 8, 2);
             $table->integer('stock')->default(0);
+            $table->string('unit');
             $table->integer('threshold');
             $table->text('description');
             $table->timestamps();

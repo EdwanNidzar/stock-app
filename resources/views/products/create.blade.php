@@ -84,6 +84,25 @@
                       @enderror
                     </div>
                     <div class="form-group">
+                      <label for="unit">{{ __('Unit') }}</label>
+                      <select class="form-control @error('unit') is-invalid @enderror" id="unit" name="unit"
+                        required>
+                        <option value="" disabled selected>Select Unit</option>
+                        <option value="gram" {{ old('unit') == 'gram' ? 'selected' : '' }}>Gram</option>
+                        <option value="kg" {{ old('unit') == 'kg' ? 'selected' : '' }}>Kilogram</option>
+                        <option value="ekor" {{ old('unit') == 'ekor' ? 'selected' : '' }}>Ekor</option>
+                        <option value="pcs" {{ old('unit') == 'pcs' ? 'selected' : '' }}>Pcs</option>
+                        <option value="pack" {{ old('unit') == 'pack' ? 'selected' : '' }}>Pack</option>
+                        <option value="pouch" {{ old('unit') == 'pouch' ? 'selected' : '' }}>Pouch</option>
+                        <option value="buah" {{ old('unit') == 'buah' ? 'selected' : '' }}>Buah</option>
+                        <option value="dus" {{ old('unit') == 'dus' ? 'selected' : '' }}>Dus</option>
+                        <option value="liter" {{ old('unit') == 'liter' ? 'selected' : '' }}>Liter</option>
+                      </select>
+                      @error('unit')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                      @enderror
+                    </div>
+                    <div class="form-group">
                       <label for="price">{{ __('Price') }}</label>
                       <input type="number" class="form-control @error('price') is-invalid @enderror" id="price"
                         name="price" value="{{ old('price') }}" placeholder="Enter Product Price" required>

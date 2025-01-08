@@ -2,7 +2,7 @@
 <html>
 
 <head>
-  <title>Category Product Report</title>
+  <title>Product Report</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -51,6 +51,11 @@
       background-color: #28a745;
     }
 
+    .badge-warning {
+      color: #212529;
+      background-color: #ffc107;
+    }
+
     .d-flex {
       display: flex;
     }
@@ -62,16 +67,11 @@
     .mr-2 {
       margin-right: 0.5rem;
     }
-
-    .fas {
-      font-family: "Font Awesome 5 Free";
-      font-weight: 900;
-    }
   </style>
 </head>
 
 <body>
-  <h1>Category Product Report</h1>
+  <h1>Product Report</h1>
   <table>
     <thead>
       <tr>
@@ -89,14 +89,16 @@
           <td>{{ $product->supplier->name_supplier }}</td>
           <td>{{ $product->category->category_name }}</td>
           <td>
-            @if ($product->stock <= $product->threshold)
+            @if ($product->stock < $product->threshold)
               <span class="badge badge-danger d-flex align-items-center">
-                <i class="fas fa-exclamation-circle mr-2"></i>
+                {{ $product->stock }}
+              </span>
+            @elseif ($product->stock == $product->threshold)
+              <span class="badge badge-warning d-flex align-items-center">
                 {{ $product->stock }}
               </span>
             @else
               <span class="badge badge-success d-flex align-items-center">
-                <i class="fas fa-check-circle mr-2"></i>
                 {{ $product->stock }}
               </span>
             @endif

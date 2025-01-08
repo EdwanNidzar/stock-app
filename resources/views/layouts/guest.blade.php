@@ -21,6 +21,9 @@
         <a href="/">{{ config('app.name', 'Laravel') }}</a>
     </div>
     <!-- /.login-logo -->
+    <div class="text-center mb-4">
+        <img src="{{ asset('images/logo.png') }}" alt="Logo" class="img-fluid" width="50%">
+    </div>
     <div class="card">
         @yield('content')
     </div>
