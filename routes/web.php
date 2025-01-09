@@ -22,7 +22,7 @@ Auth::routes();
 Route::get('/home', [App\Http\Controllers\DashboardController::class, 'index'])->name('home');
 Route::get('/home/usage', [App\Http\Controllers\DashboardController::class, 'usage'])->name('home.usage');
 
-Route::middleware(['auth', 'role:owner'])->group(function () {
+Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::get('users', [\App\Http\Controllers\UserController::class, 'index'])->name('users.index');
     Route::patch('users/{id}/updateRole', [\App\Http\Controllers\UserController::class, 'updateRole'])->name('users.updateRole');
     Route::delete('users/{id}', [\App\Http\Controllers\UserController::class, 'deleteAccount'])->name('users.delete');
@@ -59,7 +59,7 @@ Route::get('history/{tableName}', [\App\Http\Controllers\HistoryController::clas
     ->middleware('auth');
 
 // route for cek stock
-Route::get('/check-stock', [\App\Http\Controllers\ProductController::class, 'showCheckStockForm'])->name('check-stock');
+Route::get('/check-stock', [\App\Http\Controllers\ProductController::class, 'showCheckStockForm'])->name('check-stock')->middleware('auth');
 Route::post('/check-product-stock', [\App\Http\Controllers\ProductController::class, 'checkProductStock'])->name('check-product-stock');
 Route::post('/export-stock-report', [\App\Http\Controllers\ProductController::class, 'exportStockReport'])->name('export-stock-report');
 Route::get('/product/usage', [\App\Http\Controllers\ProductController::class, 'showUsageForm'])->name('product.usage.form');
