@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class StockLog extends Model
+class StockRequest extends Model
 {
     use HasFactory;
 
@@ -17,7 +17,7 @@ class StockLog extends Model
         'photo',
         'expired_at',
         'note',
-        'status'
+        'status',
     ];
 
     public function product()
@@ -25,15 +25,9 @@ class StockLog extends Model
         return $this->belongsTo(Product::class);
     }
 
-    public function getPhotoUrlAttribute()
-    {
-        return asset('storage/' . $this->photo);
-    }
-
     public function user()
     {
         return $this->belongsTo(User::class);
     }
-
 
 }

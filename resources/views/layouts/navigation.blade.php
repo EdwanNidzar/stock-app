@@ -47,6 +47,17 @@
                 </a>
             </li>
 
+            @if (auth()->user()->hasRole('admin') || auth()->user()->hasRole('manager'))
+            <li class="nav-item">
+                <a href="{{ route('stockRequests.index') }}" class="nav-link">
+                    <i class="nav-icon fas fa-box"></i>
+                    <p>
+                        {{ __('Stock Requests') }}
+                    </p>
+                </a>
+            </li>
+            @endif
+
             <li class="nav-item">
                 <a href="{{ route('check-stock') }}" class="nav-link">
                     <i class="nav-icon fas fa-box"></i>

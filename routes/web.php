@@ -65,3 +65,9 @@ Route::post('/export-stock-report', [\App\Http\Controllers\ProductController::cl
 Route::get('/product/usage', [\App\Http\Controllers\ProductController::class, 'showUsageForm'])->name('product.usage.form');
 Route::get('/product/usage/results', [\App\Http\Controllers\ProductController::class, 'showUsage'])->name('product.usage');
 Route::get('/products/usage/pdf', [\App\Http\Controllers\ProductController::class, 'downloadUsageReport'])->name('product.usage.pdf');
+
+Route::middleware(['auth', 'role:admin|manager'])->group(function () {
+    Route::get('stock-requests', [\App\Http\Controllers\StockRequestController::class, 'index'])->name('stockRequests.index');
+    Route::post('stock-requests/{id}/approve', [\App\Http\Controllers\StockRequestController::class, 'approve'])->name('stockRequests.approve');
+    Route::post('stock-requests/{id}/reject', [\App\Http\Controllers\StockRequestController::class, 'reject'])->name('stockRequests.reject');
+});

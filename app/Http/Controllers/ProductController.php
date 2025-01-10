@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Auth;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
+use App\Models\StockRequest;
 
 class ProductController extends Controller
 {
@@ -158,21 +159,34 @@ class ProductController extends Controller
             'expired_at' => 'nullable|date',
             'note' => 'nullable|string',
         ]);
-
+    
         // Proses upload foto jika ada
         $photoPath = null;
         if ($request->hasFile('photo')) {
             $photoPath = $request->file('photo')->store('product_stock', 'public');
         }
-
+    
+        // Cek role user
+        if (Auth::user()->hasRole('karyawan')) {
+            // Simpan ke tabel stock_requests
+            StockRequest::create([
+                'product_id' => $product->id,
+                'user_id' => Auth::id(),
+                'type' => $validated['type'],
+                'quantity' => $validated['quantity'],
+                'photo' => $photoPath,
+                'expired_at' => $validated['expired_at'],
+                'note' => $validated['note'],
+            ]);
+    
+            return redirect()->back()->with('success', 'Permintaan stok berhasil diajukan untuk verifikasi!');
+        }
+    
+        // Jika user bukan karyawan, langsung update stok
         try {
-            // Perbarui stok produk
             $product->stock += $validated['type'] === 'in' ? $validated['quantity'] : -$validated['quantity'];
-
-            // Simpan perubahan stok
             $product->save();
-
-            // Simpan log perubahan stok jika diperlukan
+    
             $product->stockLogs()->create([
                 'type' => $validated['type'],
                 'quantity' => $validated['quantity'],
@@ -181,14 +195,12 @@ class ProductController extends Controller
                 'photo' => $photoPath,
                 'user_id' => Auth::id(),
             ]);
-
-            // Redirect kembali dengan pesan sukses
+    
             return redirect()->back()->with('success', 'Stok berhasil diperbarui!');
         } catch (\Exception $e) {
-            // Tangani error jika terjadi
             return redirect()->back()->with('error', 'Gagal memperbarui stok: ' . $e->getMessage());
         }
-    }
+    }    
 
     public function exportPDF()
     {
