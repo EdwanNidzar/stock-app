@@ -39,7 +39,7 @@
                 @csrf
 
                 <div class="form-group">
-                  <label for="category_name">{{ __('Supplier Name') }}</label>
+                  <label for="category_name">{{ __('Category Name') }}</label>
                   <input type="text" class="form-control @error('category_name') is-invalid @enderror"
                     id="category_name" name="category_name" value="{{ old('category_name') }}" placeholder="Enter Category Product name" required>
                   @error('category_name')

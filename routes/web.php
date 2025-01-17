@@ -1,5 +1,6 @@
 <?php
 
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -16,7 +17,6 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', function () {
     return redirect()->route('login');
 });
-
 Auth::routes();
 
 Route::get('/home', [App\Http\Controllers\DashboardController::class, 'index'])->name('home');
@@ -40,7 +40,7 @@ Route::resource('suppliers', \App\Http\Controllers\SupplierController::class)->m
 Route::get('suppliers/export/pdf', [\App\Http\Controllers\SupplierController::class, 'exportPDF'])
     ->name('suppliers.exportPDF')
     ->middleware('auth');
-    
+
 Route::resource('categories', \App\Http\Controllers\CategoryProductController::class)->middleware('auth');
 Route::get('categories/export/pdf', [\App\Http\Controllers\CategoryProductController::class, 'exportPDF'])
     ->name('categories.exportPDF')
@@ -58,13 +58,17 @@ Route::get('history/{tableName}', [\App\Http\Controllers\HistoryController::clas
     ->name('history.tableName')
     ->middleware('auth');
 
+    Route::middleware(['auth', 'role:admin|manager'])->group(function () {
+
 // route for cek stock
 Route::get('/check-stock', [\App\Http\Controllers\ProductController::class, 'showCheckStockForm'])->name('check-stock')->middleware('auth');
-Route::post('/check-product-stock', [\App\Http\Controllers\ProductController::class, 'checkProductStock'])->name('check-product-stock');
-Route::post('/export-stock-report', [\App\Http\Controllers\ProductController::class, 'exportStockReport'])->name('export-stock-report');
-Route::get('/product/usage', [\App\Http\Controllers\ProductController::class, 'showUsageForm'])->name('product.usage.form');
-Route::get('/product/usage/results', [\App\Http\Controllers\ProductController::class, 'showUsage'])->name('product.usage');
-Route::get('/products/usage/pdf', [\App\Http\Controllers\ProductController::class, 'downloadUsageReport'])->name('product.usage.pdf');
+Route::post('/check-product-stock', [\App\Http\Controllers\ProductController::class, 'checkProductStock'])->name('check-product-stock')->middleware('auth');
+Route::post('/export-stock-report', [\App\Http\Controllers\ProductController::class, 'exportStockReport'])->name('export-stock-report')->middleware('auth');
+});
+
+Route::get('/product/usage', [\App\Http\Controllers\ProductController::class, 'showUsageForm'])->name('product.usage.form')->middleware('auth');
+Route::get('/product/usage/results', [\App\Http\Controllers\ProductController::class, 'showUsage'])->name('product.usage')->middleware('auth');
+Route::get('/products/usage/pdf', [\App\Http\Controllers\ProductController::class, 'downloadUsageReport'])->name('product.usage.pdf')->middleware('auth');
 
 Route::middleware(['auth', 'role:admin|manager'])->group(function () {
     Route::get('stock-requests', [\App\Http\Controllers\StockRequestController::class, 'index'])->name('stockRequests.index');

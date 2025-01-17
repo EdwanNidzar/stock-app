@@ -64,7 +64,7 @@
                   <label for="role">{{ __('Role') }}</label>
                   <select name="role" id="role" class="form-control @error('role') is-invalid @enderror" required>
                     <option value="" disabled selected>-- Select Role --</option>
-                    <option value="kepala-toko">Kepala Toko</option>
+                    <option value="manager">Manager</option>
                     <option value="karyawan">Karyawan</option>
                   </select>
                   @error('role')

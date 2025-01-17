@@ -56,7 +56,7 @@
                     </p>
                 </a>
             </li>
-            @endif
+           
 
             <li class="nav-item">
                 <a href="{{ route('check-stock') }}" class="nav-link">
@@ -66,6 +66,7 @@
                     </p>
                 </a>
             </li>
+            @endif
 
             <li class="nav-item">
                 <a href="{{ route('product.usage.form') }}" class="nav-link">
@@ -86,7 +87,8 @@
                 </a>
             </li>
             @endif
-            
+
+            @if (auth()->user()->hasRole('admin') || auth()->user()->hasRole('manager'))
             <li class="nav-item">
                 <a href="#" class="nav-link">
                     <i class="nav-icon fas fa-circle nav-icon"></i>
@@ -119,6 +121,7 @@
                         </a>
                     </li>
                 </ul>
+                @endif
             </li>
         </ul>
     </nav>
