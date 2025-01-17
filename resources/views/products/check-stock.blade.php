@@ -18,6 +18,20 @@
     <div class="container-fluid">
       <div class="row">
         <div class="col-lg-12">
+          @if (session('success'))
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+              {{ session('success') }}
+              <button type="button" class="btn-close" data-dismiss="alert" aria-label="Close"></button>
+            </div>
+          @endif
+
+          @if (session('error'))
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+              {{ session('error') }}
+              <button type="button" class="btn-close" data-dismiss="alert" aria-label="Close"></button>
+            </div>
+          @endif
+
           <div class="card">
             <div class="card-header">
               <h3 class="card-title">{{ __('Check Product Stock') }}</h3>
@@ -43,7 +57,7 @@
                         </div>
                         <div class="col-md-6">
                           <input type="number" name="products[{{ $loop->index }}][real_stock]"
-                            class="form-control real-stock" placeholder="{{ __('Enter real stock quantity') }}" required>
+                            class="form-control real-stock" placeholder="{{ __('Enter real stock quantity') }}">
                         </div>
                       </div>
                     @endforeach
@@ -62,7 +76,52 @@
                 <div class="card-header">
                   <h3 class="card-title">{{ __('Stock Report') }}</h3>
                   <div class="float-right">
-                    <form action="{{ route('export-stock-report') }}" method="POST" target="_blank">
+                    <!-- Tombol Simpan dengan Modal -->
+                    <button type="button" id="saveReportButton" class="btn btn-success" data-toggle="modal"
+                      data-target="#saveReportModal">
+                      {{ __('Save Report') }}
+                    </button>
+                    <!-- Modal Konfirmasi -->
+                    <div class="modal fade" id="saveReportModal" tabindex="-1" role="dialog"
+                      aria-labelledby="saveReportModalLabel" aria-hidden="true">
+                      <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                          <div class="modal-header">
+                            <h5 class="modal-title" id="saveReportModalLabel">{{ __('Confirm Save') }}</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                              <span aria-hidden="true">&times;</span>
+                            </button>
+                          </div>
+                          <div class="modal-body">
+                            {{ __('Are you sure you want to save this report?') }}
+                          </div>
+                          <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">
+                              {{ __('Cancel') }}
+                            </button>
+                            <form action="{{ route('store-stock') }}" method="POST" id="saveReportForm">
+                              @csrf
+                              @foreach ($report as $key => $item)
+                                <input type="text" name="report[{{ $key }}][product_name]"
+                                  value="{{ $item['product_name'] }}">
+                                <input type="text" name="report[{{ $key }}][system_stock]"
+                                  value="{{ $item['system_stock'] }}">
+                                <input type="text" name="report[{{ $key }}][real_stock]"
+                                  value="{{ $item['real_stock'] }}">
+                                <input type="text" name="report[{{ $key }}][status]"
+                                  value="{{ $item['status'] }}">
+                              @endforeach
+                              <input type="text" name="discipline_percentage" value="{{ $disciplinePercentage }}">
+                              <button type="submit" class="btn btn-success">{{ __('Save') }}</button>
+                            </form>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <!-- Tombol Export PDF -->
+                    <form action="{{ route('export-stock-report') }}" method="POST" target="_blank"
+                      style="display: inline;">
                       @csrf
                       <input type="hidden" name="report" value="{{ json_encode($report) }}">
                       <input type="hidden" name="disciplinePercentage" value="{{ $disciplinePercentage }}">
@@ -107,8 +166,7 @@
                                   <li>
                                     <strong>{{ $log->type }}:</strong> {{ $log->quantity }}
                                     ({{ $log->created_at->format('d M Y') }})
-                                    -
-                                    {{ $log->user->name }}
+                                    - {{ $log->user->name }}
                                   </li>
                                 @endforeach
                               </ul>
@@ -124,12 +182,11 @@
               </div>
             @endif
 
-            @if (isset($disciplinePercentage))
+            @if (isset($disciplinePercentage) && $disciplinePercentage !== null)
               <div class="mt-4">
                 <h4>{{ __('Displin Stok (Performansi Tim) :') }} {{ $disciplinePercentage }}%</h4>
               </div>
             @endif
-
           </div>
         </div>
       </div>
@@ -137,15 +194,36 @@
   </div>
 
   <script>
+    function confirmSaveReport() {
+      return confirm("Apakah Anda yakin ingin menyimpan laporan stok ini?");
+    }
+  </script>
+
+  <script>
     document.getElementById('resetButton').addEventListener('click', function() {
-      // Hapus nilai input stok nyata
+
       document.querySelectorAll('.real-stock').forEach(input => input.value = '');
 
-      // Hapus laporan stok
+      // Reset stock report content
       const reportContainer = document.getElementById('reportContainer');
       if (reportContainer) {
-        reportContainer.innerHTML = ''; // Hapus konten laporan
+        reportContainer.innerHTML = ''; // Clear report content
       }
+    });
+  </script>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      setTimeout(function() {
+        let alerts = document.querySelectorAll('.alert');
+        alerts.forEach(function(alert) {
+          alert.classList.remove('show');
+          alert.classList.add('fade');
+          setTimeout(function() {
+            alert.remove();
+          }, 150); // Wait for the fade transition to complete before removing
+        });
+      }, 3000);
     });
   </script>
 

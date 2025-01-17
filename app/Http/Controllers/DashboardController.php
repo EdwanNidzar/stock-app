@@ -5,14 +5,27 @@ namespace App\Http\Controllers;
 use App\Models\Product;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\DB;
 
 class DashboardController extends Controller
 {
     public function index()
     {
         $products = Product::all(); // Fetch products from the database
-        
-        return view('home', compact('products'));
+
+        // Group stock reports by month and calculate average discipline percentage
+        $monthlyPerformance = DB::table('stock_reports')
+            ->select(
+                DB::raw('DATE_FORMAT(created_at, "%Y-%m") as month'),
+                DB::raw('AVG(discipline_percentage) as average_discipline')
+            )
+            ->groupBy('month')
+            ->orderBy('month')
+            ->get();
+
+            // dd($monthlyPerformance);
+
+        return view('home', compact('products', 'monthlyPerformance'));
     }
 
 
@@ -74,8 +87,18 @@ class DashboardController extends Controller
             ];
         }
 
+        // Group stock reports by month and calculate average discipline percentage
+        $monthlyPerformance = DB::table('stock_reports')
+            ->select(
+                DB::raw('DATE_FORMAT(created_at, "%Y-%m") as month'),
+                DB::raw('AVG(discipline_percentage) as average_discipline')
+            )
+            ->groupBy('month')
+            ->orderBy('month')
+            ->get();
+
         // Return the results to the view, passing all products
-        return view('home', compact('labels', 'datasets', 'startDate', 'endDate', 'products'));
+        return view('home', compact('labels', 'datasets', 'startDate', 'endDate', 'products', 'monthlyPerformance'));
     }
 
   

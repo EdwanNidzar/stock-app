@@ -39,7 +39,9 @@
               <table class="table table-bordered">
                 <thead>
                   <tr>
+                    <th>Picture</th>
                     <th>Product</th>
+                    <th>Request Date</th>
                     <th>User</th>
                     <th>Type</th>
                     <th>Quantity</th>
@@ -51,23 +53,38 @@
                 <tbody>
                   @foreach ($stockRequests as $request)
                     <tr>
+
+                      <td>
+                        @if ($request->photo)
+                          <img src="{{ asset('storage/' . $request->photo) }}" alt="{{ $request->product->product_name }}"
+                            width="50" height="50">
+                        @else
+                          <span>No Image</span>
+                        @endif
+                      </td>
                       <td>{{ $request->product->product_name }}</td>
+                      <td>{{ $request->created_at->format('Y-m-d') }}</td>
                       <td>{{ $request->user->name }}</td>
                       <td>{{ ucfirst($request->type) }}</td>
                       <td>{{ $request->quantity }}</td>
                       <td>{{ $request->note }}</td>
                       <td>{{ ucfirst($request->status) }}</td>
                       <td>
-                        <form action="{{ route('stockRequests.approve', $request->id) }}" method="POST"
-                          style="display: inline;">
-                          @csrf
-                          <button class="btn btn-primary">Approve</button>
-                        </form>
-                        <form action="{{ route('stockRequests.reject', $request->id) }}" method="POST"
-                          style="display: inline;">
-                          @csrf
-                          <button class="btn btn-danger">Reject</button>
-                        </form>
+                        @if ($request->status == 'pending')
+                          <!-- Cek jika status adalah pending -->
+                          <form action="{{ route('stockRequests.approve', $request->id) }}" method="POST"
+                            style="display: inline;">
+                            @csrf
+                            <button class="btn btn-primary">Approve</button>
+                          </form>
+                          <form action="{{ route('stockRequests.reject', $request->id) }}" method="POST"
+                            style="display: inline;">
+                            @csrf
+                            <button class="btn btn-danger">Reject</button>
+                          </form>
+                        @else
+                          <span>-</span>
+                        @endif
                       </td>
                     </tr>
                   @endforeach

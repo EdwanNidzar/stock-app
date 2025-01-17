@@ -63,6 +63,7 @@ Route::get('history/{tableName}', [\App\Http\Controllers\HistoryController::clas
 // route for cek stock
 Route::get('/check-stock', [\App\Http\Controllers\ProductController::class, 'showCheckStockForm'])->name('check-stock')->middleware('auth');
 Route::post('/check-product-stock', [\App\Http\Controllers\ProductController::class, 'checkProductStock'])->name('check-product-stock')->middleware('auth');
+Route::post('/store-stock', [\App\Http\Controllers\ProductController::class, 'reportProductStock'])->name('store-stock')->middleware('auth');
 Route::post('/export-stock-report', [\App\Http\Controllers\ProductController::class, 'exportStockReport'])->name('export-stock-report')->middleware('auth');
 });
 

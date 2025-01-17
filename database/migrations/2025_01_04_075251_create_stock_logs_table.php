@@ -19,13 +19,13 @@ return new class extends Migration
             $table->integer('quantity');
             $table->string('photo');
             $table->date('expired_at')->nullable();
-            $table->text('note')->nullable();            
-            $table->enum('status', ['pending', 'approved', 'rejected'])->default('pending');
-            $table->unsignedBigInteger('approved_by')->nullable();
+            $table->text('note')->nullable();
+            $table->unsignedBigInteger('verified_by')->nullable();
             $table->timestamps();
             
             $table->foreign('product_id')->references('id')->on('products');
             $table->foreign('user_id')->references('id')->on('users');
+            $table->foreign('verified_by')->references('id')->on('users');
         });
     }
 

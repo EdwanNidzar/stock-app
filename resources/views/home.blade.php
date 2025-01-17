@@ -22,7 +22,22 @@
             <div class="card-body">
               <p class="card-text">
                 {{ __('Visi & Misi') }}
-                <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, qui amet neque obcaecati consequatur vel eveniet velit cupiditate ullam culpa doloribus dolore, aperiam, architecto molestias reprehenderit libero laudantium iusto. Molestias!</p>
+              <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, qui amet neque obcaecati consequatur
+                vel eveniet velit cupiditate ullam culpa doloribus dolore, aperiam, architecto molestias reprehenderit
+                libero laudantium iusto. Molestias!</p>
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-lg-12">
+          <div class="card">
+            <div class="card-body">
+              <p class="card-text">
+                {{ __('Performa Stok Bulanan') }}
+                <canvas id="performanceChart" width="400" height="200"></canvas>
               </p>
             </div>
           </div>
@@ -71,6 +86,149 @@
           </div>
         </div>
       </div>
+
+      {{-- <!-- Chart for Performa Stok Bulanan--> use bar chart --}}
+      <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+      <script>
+        document.addEventListener('DOMContentLoaded', function() {
+          // Data dari Controller
+          const labels = @json($monthlyPerformance->pluck('month'));
+          const data = @json($monthlyPerformance->pluck('average_discipline'));
+
+          // Render Bar Chart
+          const ctx = document.getElementById('performanceChart').getContext('2d');
+          new Chart(ctx, {
+            type: 'bar', // Jenis chart bar
+            data: {
+              labels: labels, // Bulan
+              datasets: [{
+                label: 'Rata-rata Performa (%)',
+                data: data, // Data performa
+                backgroundColor: 'rgba(54, 162, 235, 0.5)', // Warna bar
+                borderColor: 'rgba(54, 162, 235, 1)', // Warna border
+                borderWidth: 1
+              }]
+            },
+            options: {
+              responsive: true,
+              plugins: {
+                legend: {
+                  position: 'top',
+                },
+                tooltip: {
+                  callbacks: {
+                    label: function(context) {
+                      return `${context.raw}%`; // Format tooltip
+                    }
+                  }
+                }
+              },
+              scales: {
+                y: {
+                  beginAtZero: true,
+                  title: {
+                    display: true,
+                    text: 'Rata-rata Performa (%)'
+                  }
+                },
+                x: {
+                  title: {
+                    display: true,
+                    text: 'Bulan'
+                  }
+                }
+              }
+            }
+          });
+        });
+      </script>
+      <!-- END Chart for Performa Stok Bulanan-->
+
+      {{-- <!-- Chart for Performa Stok Bulanan--> use line chart --}}
+      {{-- <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+      <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom"></script>
+      <script>
+        document.addEventListener('DOMContentLoaded', function() {
+          // Data dari Controller
+          const labels = @json($monthlyPerformance->pluck('month'));
+          const data = @json($monthlyPerformance->pluck('average_discipline'));
+
+          // Render Chart
+          const ctx = document.getElementById('performanceChart').getContext('2d');
+          new Chart(ctx, {
+            type: 'line', // Jenis chart
+            data: {
+              labels: labels, // Bulan
+              datasets: [{
+                label: 'Rata-rata Performa (%)',
+                data: data, // Data performa
+                borderColor: 'rgba(75, 192, 192, 1)',
+                backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                borderWidth: 2,
+                fill: true,
+                pointHoverRadius: 8, // Larger point on hover
+                pointHoverBackgroundColor: 'rgba(255, 99, 132, 1)',
+                pointHoverBorderColor: 'rgba(255, 99, 132, 1)',
+              }]
+            },
+            options: {
+              responsive: true,
+              interaction: {
+                mode: 'index',
+                intersect: false, // Show data from multiple points on hover
+              },
+              plugins: {
+                legend: {
+                  position: 'top',
+                },
+                tooltip: {
+                  callbacks: {
+                    label: function(context) {
+                      return `Performa: ${context.raw}%`; // Format tooltip
+                    }
+                  }
+                },
+                zoom: {
+                  pan: {
+                    enabled: true, // Enable panning
+                    mode: 'x', // Pan horizontally
+                  },
+                  zoom: {
+                    wheel: {
+                      enabled: true, // Zoom with mouse wheel
+                    },
+                    pinch: {
+                      enabled: true, // Zoom with touch gestures
+                    },
+                    mode: 'x', // Zoom horizontally
+                  }
+                }
+              },
+              scales: {
+                y: {
+                  beginAtZero: true,
+                  title: {
+                    display: true,
+                    text: 'Rata-rata Performa (%)'
+                  },
+                  ticks: {
+                    callback: function(value) {
+                      return `${value}%`; // Add '%' to y-axis labels
+                    }
+                  }
+                },
+                x: {
+                  title: {
+                    display: true,
+                    text: 'Bulan'
+                  }
+                }
+              }
+            }
+          });
+        });
+      </script> --}}
+      <!-- END Chart for Performa Stok Bulanan-->
 
       <!-- Chart -->
       @if (isset($labels) && isset($datasets))

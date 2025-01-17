@@ -17,7 +17,7 @@ class StockLog extends Model
         'photo',
         'expired_at',
         'note',
-        'status'
+        'verified_by',
     ];
 
     public function product()
@@ -33,6 +33,11 @@ class StockLog extends Model
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function verifiedBy()
+    {
+        return $this->belongsTo(User::class, 'verified_by');
     }
 
 

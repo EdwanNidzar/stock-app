@@ -64,33 +64,35 @@
                       <td>{{ $product->product_name }}</td>
                       <td>{{ $product->supplier->name_supplier }}</td>
                       <td>{{ $product->category->category_name }}</td>
-                        <td>
+                      <td>
                         @if ($product->stock < $product->threshold)
                           <span class="badge badge-danger d-flex align-items-center">
-                          <i class="fas fa-exclamation-circle mr-2"></i>
-                          {{ $product->stock }}
+                            <i class="fas fa-exclamation-circle mr-2"></i>
+                            {{ $product->stock }}
                           </span>
                         @elseif ($product->stock == $product->threshold)
                           <span class="badge badge-warning d-flex align-items-center">
-                          <i class="fas fa-exclamation-triangle mr-2"></i>
-                          {{ $product->stock }}
+                            <i class="fas fa-exclamation-triangle mr-2"></i>
+                            {{ $product->stock }}
                           </span>
                         @else
                           <span class="badge badge-success d-flex align-items-center">
-                          <i class="fas fa-check-circle mr-2"></i>
-                          {{ $product->stock }}
+                            <i class="fas fa-check-circle mr-2"></i>
+                            {{ $product->stock }}
                           </span>
                         @endif
-                        </td>
+                      </td>
                       <td>{{ $product->unit }}</td>
                       <td>{{ $product->threshold }}</td>
                       <td>
                         <a href="{{ route('products.show', $product->id) }}" class="btn btn-sm btn-primary">
                           <i class="fas fa-eye"></i>
                         </a>
-                        <a href="{{ route('products.edit', $product->id) }}" class="btn btn-sm btn-warning">
-                          <i class="fas fa-edit"></i>
-                        </a>
+                        @if (auth()->user()->hasRole('admin') || auth()->user()->hasRole('manager'))
+                          <a href="{{ route('products.edit', $product->id) }}" class="btn btn-sm btn-warning">
+                            <i class="fas fa-edit"></i>
+                          </a>
+                        @endif
                         <button type="button" class="btn btn-sm btn-info" data-toggle="modal"
                           data-target="#updateStockModal-{{ $product->id }}">
                           <i class="fas fa-box"></i>
@@ -99,15 +101,17 @@
                           data-target="#productLogsModal-{{ $product->id }}">
                           <i class="fas fa-history"></i>
                         </button>
-                        <form action="{{ route('products.destroy', $product->id) }}" method="POST"
-                          style="display:inline;">
-                          @csrf
-                          @method('DELETE')
-                          <button type="submit" class="btn btn-sm btn-danger"
-                            onclick="return confirm('Are you sure you want to delete this category?');">
-                            <i class="fas fa-trash"></i>
-                          </button>
-                        </form>
+                        @if (auth()->user()->hasRole('admin') || auth()->user()->hasRole('manager'))
+                          <form action="{{ route('products.destroy', $product->id) }}" method="POST"
+                            style="display:inline;">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit" class="btn btn-sm btn-danger"
+                              onclick="return confirm('Are you sure you want to delete this category?');">
+                              <i class="fas fa-trash"></i>
+                            </button>
+                          </form>
+                        @endif
                       </td>
                     </tr>
 
@@ -121,7 +125,8 @@
                           <div class="modal-content">
                             <div class="modal-header">
                               <h5 class="modal-title" id="updateStockModalLabel-{{ $product->id }}">Update Stock for
-                                {{ $product->product_name }}</h5>
+                                {{ $product->product_name }} - current stock : {{ $product->stock }}
+                                {{ $product->unit }} </h5>
                               <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close"></button>
                             </div>
                             <div class="modal-body">
@@ -141,8 +146,8 @@
                               </div>
                               <div class="mb-3">
                                 <label for="photo-{{ $product->id }}" class="form-label">Photo</label>
-                                <input type="file" name="photo" id="photo-{{ $product->id }}" class="form-control"
-                                  accept="image/*" required>
+                                <input type="file" name="photo" id="photo-{{ $product->id }}"
+                                  class="form-control" accept="image/*" required>
                               </div>
                               <div class="mb-3">
                                 <label for="expired_at-{{ $product->id }}" class="form-label">Expired At</label>
@@ -181,6 +186,10 @@
                                   <strong>{{ $log->user->name }}</strong> :
                                   <strong>{{ ucfirst($log->type) }}</strong> -
                                   {{ \Carbon\Carbon::parse($log->created_at)->format('d/m/Y') }}
+                                  @if ($log->verifiedBy)
+                                    Diverikasi oleh : {{ $log->verifiedBy->name }}
+                                  @else
+                                  @endif
                                 </div>
                                 <div class="card-body">
                                   <p><strong>Quantity:</strong> {{ $log->quantity }}</p>
@@ -188,13 +197,14 @@
                                   <p>
                                     <strong>Expired:</strong>{{ \Carbon\Carbon::parse($log->expired_at)->format('d/m/Y') }}
                                   </p>
-                                    @if ($log->photo)
+                                  @if ($log->photo)
                                     <p><strong>Photo:</strong> <a href="{{ asset('storage/' . $log->photo) }}"
-                                      target="_blank">View Image</a></p>
-                                    <img src="{{ asset('storage/' . $log->photo) }}" alt="Log Photo" class="img-thumbnail" width="100">
-                                    @else
+                                        target="_blank">View Image</a></p>
+                                    <img src="{{ asset('storage/' . $log->photo) }}" alt="Log Photo"
+                                      class="img-thumbnail" width="100">
+                                  @else
                                     <p>No photo available</p>
-                                    @endif
+                                  @endif
                                 </div>
                               </div>
                             @empty
@@ -224,7 +234,8 @@
 
       <!-- Tombol untuk membuka modal -->
       <div class="float-right position-fixed" style="bottom: 100px; right: 20px;">
-        <button id="viewHistoryBtn" data-table="products" class="btn btn-info"><i class="fas fa-history"></i> View History</button>
+        <button id="viewHistoryBtn" data-table="products" class="btn btn-info"><i class="fas fa-history"></i> View
+          History</button>
       </div>
 
       <!-- /.row -->
@@ -233,7 +244,7 @@
   <!-- /.content -->
 
   <!-- Include the dynamic history modal -->
-  @include('layouts/history') 
+  @include('layouts/history')
 
 
   <script>

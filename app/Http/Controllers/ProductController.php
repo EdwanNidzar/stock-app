@@ -12,6 +12,8 @@ use Illuminate\Support\Facades\Auth;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
 use App\Models\StockRequest;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\ValidationException;
 
 class ProductController extends Controller
 {
@@ -225,56 +227,99 @@ class ProductController extends Controller
     {
         $data = $request->input('products'); // Ambil input produk
         $report = [];
-        $totalItems = count($data);
+        $totalItems = count($data); // Total produk yang diinput oleh pengguna
         $itemsLurus = 0;
 
-        foreach ($data as $item) {
-            $product = Product::find($item['product_id']);
+        // Filter produk yang memiliki real_stock yang diisi
+        $data = array_filter($data, function ($item) {
+            return !empty($item['real_stock']);
+        });
 
-            if ($product) {
-                $status = '';
-                // Logika pengecekan stok
-                if ($product->stock == $item['real_stock']) {
-                    $status = 'Stok Sesuai';
-                    $itemsLurus++;
-                } else {
-                    if ($product->stock < $item['real_stock']) {
-                        $status = 'Stok Sistem lebih sedikit daripada Real';
-                    } elseif ($product->stock > $item['real_stock']) {
-                        $status = 'Stok Sistem lebih banyak daripada Real';
+        // Total produk di database
+        $countProduct = Product::count();
+
+        // Jika tidak ada produk yang diisi real_stock, tidak perlu menghitung disciplinePercentage
+        if (count($data) == 0) {
+            $disciplinePercentage = null;
+        } else {
+            foreach ($data as $item) {
+                $product = Product::find($item['product_id']);
+
+                if ($product) {
+                    $status = '';
+                    // Logika pengecekan stok
+                    if ($product->stock == $item['real_stock']) {
+                        $status = 'Stok Sesuai';
+                        $itemsLurus++;
+                    } else {
+                        if ($product->stock < $item['real_stock']) {
+                            $status = 'Stok Sistem lebih sedikit daripada Real';
+                        } elseif ($product->stock > $item['real_stock']) {
+                            $status = 'Stok Sistem lebih banyak daripada Real';
+                        }
                     }
+
+                    // Ambil log terkait produk
+                    $stockLogs = StockLog::where('product_id', $item['product_id'])->orderBy('created_at', 'desc')->get();
+
+                    $report[] = [
+                        'product_name' => $product->product_name,
+                        'product_photo' => $product->product_photo,
+                        'system_stock' => $product->stock,
+                        'real_stock' => $item['real_stock'],
+                        'status' => $status,
+                        'logs' => $stockLogs,
+                    ];
+                } else {
+                    $report[] = [
+                        'product_name' => 'Produk Tidak Ditemukan',
+                        'product_photo' => null,
+                        'system_stock' => null,
+                        'real_stock' => $item['real_stock'],
+                        'status' => 'Tidak Ditemukan',
+                        'logs' => [],
+                    ];
                 }
+            }
 
-                // Ambil log terkait produk
-                $stockLogs = StockLog::where('product_id', $item['product_id'])->orderBy('created_at', 'desc')->get();
-
-                $report[] = [
-                    'product_name' => $product->product_name,
-                    'product_photo' => $product->product_photo,
-                    'system_stock' => $product->stock,
-                    'real_stock' => $item['real_stock'],
-                    'status' => $status,
-                    'logs' => $stockLogs,
-                ];
+            // Menghitung disiplin stok hanya jika semua produk diinput
+            if (count($data) == $countProduct) {
+                $disciplinePercentage = ($itemsLurus / count($data)) * 100;
             } else {
-                $report[] = [
-                    'product_name' => 'Produk Tidak Ditemukan',
-                    'product_photo' => null,
-                    'system_stock' => null,
-                    'real_stock' => $item['real_stock'],
-                    'status' => 'Tidak Ditemukan',
-                    'logs' => [],
-                ];
+                $disciplinePercentage = null;
             }
         }
-
-        // Menghitung disiplin stok
-        $disciplinePercentage = ($itemsLurus / $totalItems) * 100;
 
         // Ambil data produk untuk dropdown
         $products = Product::all();
 
         return view('products.check-stock', compact('report', 'products', 'disciplinePercentage'));
+    }
+
+    public function reportProductStock(Request $request)
+    {
+        try {
+            $validated = $request->validate([
+                'report' => 'required|array',
+                'discipline_percentage' => 'required|numeric',
+            ]);
+
+            DB::table('stock_reports')->insert([
+                'report' => json_encode($validated['report']),
+                'discipline_percentage' => $validated['discipline_percentage'],
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+
+            return redirect()->route('check-stock')->with('success', 'Laporan stok berhasil disimpan!');
+        } catch (ValidationException $e) {
+            return redirect()->route('check-stock')
+                ->withErrors($e->validator)
+                ->withInput();
+        } catch (\Exception $e) {
+            return redirect()->route('check-stock')
+                ->with('error', 'Gagal menyimpan laporan stok: ' . $e->getMessage());
+        }
     }
 
     public function exportStockReport(Request $request)
