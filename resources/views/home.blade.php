@@ -20,11 +20,28 @@
         <div class="col-lg-12">
           <div class="card">
             <div class="card-body">
+              <h2 class="card-title"><strong>{{ __('Visi') }}</strong></h2>
               <p class="card-text">
-                {{ __('Visi & Misi') }}
-              <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, qui amet neque obcaecati consequatur
-                vel eveniet velit cupiditate ullam culpa doloribus dolore, aperiam, architecto molestias reprehenderit
-                libero laudantium iusto. Molestias!</p>
+                Menjadi merek ayam tepung lokal yang terdepan dengan cita rasa lezat, harga terjangkau, serta berperan
+                dalam mendukung kemajuan UMKM di Kalimantan Selatan.
+              </p>
+              <hr>
+              <h2 class="card-title"><strong>{{ __('Misi') }}</strong></h2>
+              <ul class="list-group list-group-flush">
+                <li class="list-group-item">1. Menyajikan ayam tepung berkualitas dengan harga yang bersahabat.</li>
+                <li class="list-group-item">2. Menjaga kelezatan rasa yang konsisten dan sesuai dengan selera masyarakat.
+                </li>
+                <li class="list-group-item">3. Mendukung pertumbuhan UMKM melalui kemitraan dan pemberdayaan lokal.</li>
+                <li class="list-group-item">4. Memberikan pelayanan yang ramah dan cepat demi kepuasan pelanggan.</li>
+                <li class="list-group-item">5. Terus berinovasi dalam produk dan operasional untuk meningkatkan daya
+                  saing.</li>
+              </ul>
+              <hr>
+              <p>
+                <strong>Alamat:</strong> Jl. H. Mistar Cokrokusumo, Loktabat Sel., Kec. Banjarbaru Selatan, Kota Banjar
+                Baru, Kalimantan
+                Selatan<br>
+                <strong>Telepon:</strong> +6289513515040
               </p>
             </div>
           </div>
